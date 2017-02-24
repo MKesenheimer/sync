@@ -1,0 +1,31 @@
+# FormCalc and FeynArts stuff
+/Users/kesenheimer/local/FeynArts-3.9/Models/MSSMCT_dZgg3.mod
+/Users/kesenheimer/local/FeynArts-3.9/Models/MSSMCTPOWHEG_dZgg3.mod
+/Users/kesenheimer/local/FeynArts-3.9/Models/MSSMCTPOWHEG.mod
+/Users/kesenheimer/local/FeynArts-3.9/Models/SMQCD_dZgg3.mod
+/Users/kesenheimer/local/FeynArts-3.9/FeynArtsAdd.m
+/Users/kesenheimer/local/FormCalc-9.4/FormCalcAdd.m
+/Users/kesenheimer/local/FormCalc-9.4/FormCalcCMS.m
+/Users/kesenheimer/local/FormCalc-9.4/FormCalc/SpinCorrelatedSum.frm
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/POWHEG-BOX-V2/weakinos+jet/Scripts/Modified_Files/FeynArts/Models/MSSMCT_dZgg3.mod
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/POWHEG-BOX-V2/weakinos+jet/Scripts/Modified_Files/FeynArts/Models/MSSMCTPOWHEG_dZgg3.mod
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/POWHEG-BOX-V2/weakinos+jet/Scripts/Modified_Files/FeynArts/Models/MSSMCTPOWHEG.mod
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/POWHEG-BOX-V2/weakinos+jet/Scripts/Modified_Files/FeynArts/Models/SMQCD_dZgg3.mod
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/POWHEG-BOX-V2/weakinos+jet/Scripts/Modified_Files/FeynArts/FeynArtsAdd.m
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/POWHEG-BOX-V2/weakinos+jet/Scripts/Modified_Files/FormCalc/FormCalcAdd.m
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/POWHEG-BOX-V2/weakinos+jet/Scripts/Modified_Files/FormCalc/FormCalcCMS.m
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/POWHEG-BOX-V2/weakinos+jet/Scripts/Modified_Files/FormCalc/FormCalc/SpinCorrelatedSum.frm
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/Test_FormCalc_Amps/Scripts/Additional_FormCalc_Packages/FeynArtsAdd.m
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/Test_FormCalc_Amps/Scripts/Additional_FormCalc_Packages/FormCalcAdd.m
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/Test_FormCalc_Amps/Scripts/Additional_FormCalc_Packages/FormCalcCMS.m
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/Test_FormCalc_Amps/Scripts/Additional_FormCalc_Packages/SpinCorrelatedSum.frm
+/Users/kesenheimer/Documents/Unikram/Promotion/Mathematica/PolarizationSum_Bug/FormCalcAdd.m
+/Users/kesenheimer/Documents/Unikram/Promotion/Mathematica/Finiteness_of_QCD_Loops/dZgg3/
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/Test_FormCalc_Virtuals_Collier/Scripts/dZgg3/
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/Test_FormCalc_Virtuals_LoopTools/Scripts/dZgg3/
+#
+#
+# collier interface
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/Compare_LoopTools_Collier/collier/
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/POWHEG-BOX-V2/weakinos+jet/Tools/collier/
+/Users/kesenheimer/Documents/Unikram/Promotion/Fortran/Test_FormCalc_Virtuals_Collier/Tools/collier/
