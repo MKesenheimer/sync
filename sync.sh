@@ -12,7 +12,7 @@
 
 WORKINGDIR=$(pwd)
 
-if [ $1 == "" ]; then
+if [ "$1" == "" ]; then
   echo "Usage: ./sync flist"
 fi
 
@@ -69,7 +69,7 @@ for f1 in "${FILES[@]}"; do
   for f2 in "${FILES[@]}"; do
     if [ $f1 != $f2 ] && [ $(basename $f1) == $(basename $f2) ]; then
       #echo "checking $f1 and $f2..."
-      if ! diff -q $f1 $f2 &>/dev/null; then
+      if [ ! diff -q $f1 $f2 &>/dev/null ]; then
         >&2 echo -e "> $f1\nand\n> $f2\ndiffer:"
         diff $f1 $f2
         if [ $f1 -nt $f2 ]; then
