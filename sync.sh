@@ -51,8 +51,14 @@ done
 # Erstaufruf: Kopiere die Dateien und Ordner, falls am Zielort nicht vorhanden
 for f1 in "${FILES[@]}"; do
   for f2 in "${FILES[@]}"; do
-    if [ $f1 != $f2 ] && [ $(basename $f1) == $(basename $f2) ] && [ -e $f1 ] && [ ! -e $f2 ]; then
-      echo "cp -r $f1 $f2"
+    # if file
+    if [ "${f1: -1}" != "/" ] && [ $f1 != $f2 ] && [ $(basename $f1) == $(basename $f2) ] && [ -e $f1 ] && [ ! -e $f2 ]; then
+      mkdir -p $(dirname $f2)
+      cp -r $f1 $f2
+    fi
+    # if folder
+    if [ "${f1: -1}" == "/" ] && [ $f1 != $f2 ] && [ $(basename $f1) == $(basename $f2) ] && [ -e $f1 ] && [ ! -e $f2 ]; then
+      #echo "cp -r $f1 $f2"
       cp -r $f1 $f2
     fi
   done

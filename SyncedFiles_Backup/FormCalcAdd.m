@@ -126,7 +126,7 @@ Begin["`Private`"]
 
 Print[];
 Print["FormCalcAdd 1.2.3 (23 Jan 2016)"];
-Print["by Matthias Kesenheimer"];
+Print["by Matthias Kesenheimer, with thanks to Thomas Hahn"];
 
 
 (*helpful function to extract parts of a Feynman amplitude*)
