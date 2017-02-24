@@ -11,8 +11,6 @@ Copied and modified on the basis of FeynArts39.m with thanks to Thomas
 Hahn.
 *)
 
-(*test*)
-
 BeginPackage["FeynArts`"]
 
 FieldMatchExtQ::usage = ""
