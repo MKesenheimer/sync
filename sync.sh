@@ -13,14 +13,18 @@
 WORKINGDIR=$(pwd)
 
 if [ "$1" == "" ]; then
-  echo "Usage: ./sync flist"
+  echo "Usage: ./sync.sh flist"
+  echo "Usage: ./sync.sh /Path/To/File/1 /Path/To/File/2 ..."
 fi
 
 # Liste und Speicherort der zu synchronisierenden Dateien einlesen
 FILES=()
-IFS=$'\r\n' command eval 'FILES=($(grep -v "^#" $1 | cut -f1 -d"#"))'
-unset IFS
-
+if [ "$2" == "" ]; then
+  IFS=$'\r\n' command eval 'FILES=($(grep -v "^#" $1 | cut -f1 -d"#"))'
+  unset IFS
+else
+  FILES=("$@")
+fi
 
 # speichere die Dateien im Arbeitsverzeichnis
 mkdir -p $WORKINGDIR/SyncedFiles
