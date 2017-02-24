@@ -69,10 +69,22 @@ for f1 in "${FILES[@]}"; do
   for f2 in "${FILES[@]}"; do
     if [ $f1 != $f2 ] && [ $(basename $f1) == $(basename $f2) ]; then
       #echo "checking $f1 and $f2..."
-      if [ $f1 -nt $f2 ]; then
-        rsync -avz --update $f1 $f2
-      else
-        rsync -avz --update $f2 $f1
+      if ! diff -q $f1 $f2 &>/dev/null; then
+        >&2 echo -e "> $f1\nand\n> $f2\ndiffer:"
+        diff $f1 $f2
+        if [ $f1 -nt $f2 ]; then
+          echo -e "> $f1\nis newer than\n> $f2\nwill overwrite latter - is this ok [Y/n]?"
+          read check
+          if [ "$check" == "Y" ]; then
+            rsync -avz --update $f1 $f2
+          fi
+        else
+          echo -e "> $f2\nis newer than\n> $f1\nwill overwrite latter - is this ok [Y/n]?"
+          read check
+          if [ "$check" == "Y" ]; then
+            rsync -avz --update $f2 $f1
+          fi
+        fi
       fi
     fi
   done
