@@ -26,10 +26,6 @@
 /home/hepuser/kesenheimer/POWHEG-BOX-V2/weakinos-jet/Scripts/FormCalc/
 /home/hepuser/HEP-TOOLS/Scripts/FormCalc/
 #
-# MadGraph
-/home/hepuser/HEP-TOOLS/Scripts/MadGraph/
-/home/hepuser/kesenheimer/POWHEG-BOX-V2/weakinos-jet/Scripts/MadGraph/
-#
 # collier interface
 /data/User/kesenheimer/Fortran/POWHEG-BOX-V2/weakinos-jet/Tools/collier/
 /home/hepuser/HEP-TOOLS/Tools/collier/

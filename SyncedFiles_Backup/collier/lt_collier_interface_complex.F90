@@ -5,20 +5,20 @@
 ! while in LT there is only a single mu scale => do not forget
 ! to set in the main program mu_uv = mu_ir
 !
-! 2. LT uses lambda_cll variable to control the IR divergences,
+! 2. LT uses lambda variable to control the IR divergences,
 ! Collier uses delta_ir1 and delta_ir2 in the DR scheme.
-! The interface reproduces the lambda_cll-scheme, so the user
+! The interface reproduces the lambda-scheme, so the user
 ! does not need to care about delta_ir1 and delta_ir2 anymore.
 !
-! 3. LT functions not needed: setdelta_cll, setmudim_cll, setuvdiv_cll
+! 3. LT functions not needed: setdelta, setmudim, setuvdiv
 !    Collier functions not needed: SetDeltaIR_cll
 !
 ! 4. Collier functions needed: SetDeltaIR_cll, SetMuUV2_cll,SetMuIR2_cll
-!    LT functions neeeded: setlambda_cll
+!    LT functions neeeded: setlambda
 
 #include "lt_types.h"
 
-subroutine Aput_cll(Atab,m)
+subroutine Aput(Atab,m)
   use COLLIER
   implicit none
 #include "lt_collier.h"
@@ -89,11 +89,21 @@ subroutine Aput_cll(Atab,m)
 
   call SetDeltaIR_cll(DeltaIR1s,DeltaIR2s) 
 
-end subroutine Aput_cll
+#ifdef DEBUG
+  do i=1,Naa
+    if(isNaN(dble(Atab(i))) .or. isNaN(dimag(Atab(i)))) then
+      print*,"Atab",Atab(:)
+      print*,"m",m
+      stop
+    endif
+  enddo
+#endif
+
+end subroutine Aput
 
 ! ----------------------------------------------------------------------
 
-subroutine Bput_cll(Btab,p10,m02,m12)
+subroutine Bput(Btab,p10,m02,m12)
   use COLLIER
   implicit none
 #include "lt_collier.h"
@@ -225,11 +235,23 @@ subroutine Bput_cll(Btab,p10,m02,m12)
 
   call SetDeltaIR_cll(DeltaIR1s,DeltaIR2s)
 
-end subroutine Bput_cll
+#ifdef DEBUG
+  do i=1,Nbb
+    if(isNaN(dble(Btab(i))) .or. isNaN(dimag(Btab(i)))) then
+      print*,"Btab",Btab(:)
+      print*,"p10",p10
+      print*,"m02",m02
+      print*,"m12",m12
+      stop
+    endif
+  enddo
+#endif
+
+end subroutine Bput
 
 ! ----------------------------------------------------------------------
 
-subroutine Cput_cll(Ctab,p10,p21,p20,m02,m12,m22)
+subroutine Cput(Ctab,p10,p21,p20,m02,m12,m22)
   use COLLIER
   implicit none
 #include "lt_collier.h"
@@ -245,7 +267,7 @@ subroutine Cput_cll(Ctab,p10,p21,p20,m02,m12,m22)
   ! parameters
   integer, parameter :: rank = 4
   RealType, parameter :: pi = 4.d0*atan(1.d0)
-
+  
   ! character*10 coeffname(Ncc)
   !
   ! data (coeffname(i), i = 1, Ncc) /
@@ -271,7 +293,7 @@ subroutine Cput_cll(Ctab,p10,p21,p20,m02,m12,m22)
   ! &    'cc1122', 'cc1122:1', 'cc1122:2',
   ! &    'cc1222', 'cc1222:1', 'cc1222:2',
   ! &    'cc2222', 'cc2222:1', 'cc2222:2' /
-
+  
   call GetDeltaIR_cll(DeltaIR1s,DeltaIR2s)
 
   allocate(Ccoeff(GetNc_cll(3,rank)))
@@ -284,7 +306,12 @@ subroutine Cput_cll(Ctab,p10,p21,p20,m02,m12,m22)
   call SetDeltaIR_cll(DeltaIR1,DeltaIR2)
 
   call C_cll(Ccoeff,Ccoeffuv,p10,p21,p20,m02,m12,m22,rank,Cerr)
-
+  !call C_cll(Ccoeff,Ccoeffuv,p20,p21,p10,m02,m22,m12,rank,Cerr) ! symmetry
+  !call C_cll(Ccoeff,Ccoeffuv,p10,p20,p21,m12,m02,m22,rank,Cerr) ! symmetry
+  !call C_cll(Ccoeff,Ccoeffuv,p21,p20,p10,m12,m22,m02,rank,Cerr) ! symmetry
+  !call C_cll(Ccoeff,Ccoeffuv,p20,p10,p21,m22,m02,m12,rank,Cerr) ! symmetry
+  !call C_cll(Ccoeff,Ccoeffuv,p21,p10,p20,m22,m12,m02,rank,Cerr) ! symmetry
+  
   do i = 1,(Ncc/3)
      j = 1+3*(i-1)
      Ctab(j) = Ccoeff(i)     
@@ -320,11 +347,26 @@ subroutine Cput_cll(Ctab,p10,p21,p20,m02,m12,m22)
 
   call SetDeltaIR_cll(DeltaIR1s,DeltaIR2s)
 
-end subroutine Cput_cll
+#ifdef DEBUG
+  do i=1,Ncc
+    if(isNaN(dble(Ctab(i))) .or. isNaN(dimag(Ctab(i)))) then
+      print*,"Ctab",Ctab(:)
+      print*,"p10",p10
+      print*,"p21",p21
+      print*,"p20",p20
+      print*,"m02",m02
+      print*,"m12",m12
+      print*,"m22",m22
+      stop
+    endif
+  enddo  
+#endif
+
+end subroutine Cput
 
 ! ----------------------------------------------------------------------    
 
-subroutine Dput_cll(Dtab,p10,p21,p32,p30,p20,p31,m02,m12,m22,m32)
+subroutine Dput(Dtab,p10,p21,p32,p30,p20,p31,m02,m12,m22,m32)
   use COLLIER
   implicit none
 #include "lt_collier.h"
@@ -424,7 +466,7 @@ subroutine Dput_cll(Dtab,p10,p21,p32,p30,p20,p31,m02,m12,m22,m32)
   ! &    'dd22333', 'dd22333:1', 'dd22333:2',
   ! &    'dd23333', 'dd23333:1', 'dd23333:2',
   ! &    'dd33333', 'dd33333:1', 'dd33333:2' /
-
+  
   call GetDeltaIR_cll(DeltaIR1s,DeltaIR2s)
 
   allocate(Dcoeff(GetNc_cll(4,rank)))
@@ -476,11 +518,30 @@ subroutine Dput_cll(Dtab,p10,p21,p32,p30,p20,p31,m02,m12,m22,m32)
 
   call SetDeltaIR_cll(DeltaIR1s,DeltaIR2s)
 
-end subroutine Dput_cll
+#ifdef DEBUG          
+  do i=1,Ndd          
+    if(isNaN(dble(Dtab(i))) .or. isNaN(dimag(Dtab(i)))) then
+      print*,"Dtab",Dtab(:)
+      print*,"p10",p10
+      print*,"p21",p21
+      print*,"p32",p32
+      print*,"p30",p30
+      print*,"p20",p20
+      print*,"p31",p31
+      print*,"m02",m02
+      print*,"m12",m12
+      print*,"m22",m22
+      print*,"m32",m32
+      stop        
+    endif              
+  enddo                  
+#endif  
+
+end subroutine Dput
 
 ! ----------------------------------------------------------------------
       
-subroutine Eput_cll(Etab,p10,p21,p32,p43,p40,p20,p31,p42,p30,p41,m02,m12, &
+subroutine Eput(Etab,p10,p21,p32,p43,p40,p20,p31,p42,p30,p41,m02,m12, &
                 m22,m32,m42)
   use COLLIER
   implicit none
@@ -640,72 +701,96 @@ subroutine Eput_cll(Etab,p10,p21,p32,p43,p40,p20,p31,p42,p30,p41,m02,m12, &
 
   call SetDeltaIR_cll(DeltaIR1s,DeltaIR2s)
 
-end subroutine Eput_cll
+#ifdef DEBUG          
+  do i=1,Nee
+    if(isNaN(dble(Etab(i))) .or. isNaN(dimag(Etab(i)))) then
+      print*,"Etab",Etab(:)
+      print*,"p10",p10
+      print*,"p21",p21
+      print*,"p32",p32
+      print*,"p43",p43
+      print*,"p40",p40
+      print*,"p20",p20
+      print*,"p31",p31
+      print*,"p42",p42
+      print*,"p30",p30
+      print*,"p41",p41
+      print*,"m02",m02
+      print*,"m12",m12
+      print*,"m22",m22
+      print*,"m32",m32
+      print*,"m42",m42
+      stop        
+    endif              
+  enddo                  
+#endif 
+
+end subroutine Eput
 
 ! ----------------------------------------------------------------------
 
-ComplexType function A0i_cll(i, m)
+ComplexType function A0i(i, m)
   implicit none
 #include "lt_collier.h"
 #include "lt_ff.h"
   integer, intent(in) :: i
   ComplexType, intent(in) :: m
   ComplexType :: aa(Naa)
-  call Aput_cll(aa,m)
-  A0i_cll = aa(i+epsi_cll)
-end function A0i_cll
+  call Aput(aa,m)
+  A0i = aa(i+epsi)
+end function A0i
 
 ! ----------------------------------------------------------------------
 
-ComplexType function A0_cll(m)
+ComplexType function A0(m)
   implicit none
-  ComplexType m,A0i_cll
-  external A0i_cll
-  A0_cll = A0i_cll(1,m)
-end function A0_cll
+  ComplexType m,A0i
+  external A0i
+  A0 = A0i(1,m)
+end function A0
 
 ! ----------------------------------------------------------------------
 
-ComplexType function B0i_cll(i,p,m1,m2)
+ComplexType function B0i(i,p,m1,m2)
   implicit none
 #include "lt_collier.h"
 #include "lt_ff.h"
   integer, intent(in) :: i
   ComplexType, intent(in) :: p,m1,m2
   ComplexType :: bb(Nbb)
-  call Bput_cll(bb,p,m1,m2)
-  B0i_cll = bb(i+epsi_cll)
-end function B0i_cll
+  call Bput(bb,p,m1,m2)
+  B0i = bb(i+epsi)
+end function B0i
 
 ! ----------------------------------------------------------------------
 
-ComplexType function C0i_cll(i,p1,p2,p1p2,m1,m2,m3)
+ComplexType function C0i(i,p1,p2,p1p2,m1,m2,m3)
   implicit none
 #include "lt_collier.h"
 #include "lt_ff.h"
   integer, intent(in) :: i
   ComplexType, intent(in) :: p1,p2,p1p2,m1,m2,m3
   ComplexType :: cc(Ncc)
-  call Cput_cll(cc,p1,p2,p1p2,m1,m2,m3)
-  C0i_cll = cc(i+epsi_cll)
-end function C0i_cll
+  call Cput(cc,p1,p2,p1p2,m1,m2,m3)
+  C0i = cc(i+epsi)
+end function C0i
 
 ! ----------------------------------------------------------------------
 
-ComplexType function D0i_cll(i,p1,p2,p3,p4,p1p2,p2p3,m1,m2,m3,m4)
+ComplexType function D0i(i,p1,p2,p3,p4,p1p2,p2p3,m1,m2,m3,m4)
   implicit none
 #include "lt_collier.h"
 #include "lt_ff.h"
   integer, intent(in) :: i
   ComplexType, intent(in) :: p1,p2,p3,p4,p1p2,p2p3,m1,m2,m3,m4  
   ComplexType :: dd(Ndd)
-  call Dput_cll(dd,p1,p2,p3,p4,p1p2,p2p3,m1,m2,m3,m4)
-  D0i_cll = dd(i+epsi_cll)
-end function D0i_cll
+  call Dput(dd,p1,p2,p3,p4,p1p2,p2p3,m1,m2,m3,m4)
+  D0i = dd(i+epsi)
+end function D0i
 
 ! ----------------------------------------------------------------------
 
-ComplexType function E0i_cll(i,p1,p2,p3,p4,p5,p1p2,p2p3,p3p4,p4p5,p5p1,m1, &
+ComplexType function E0i(i,p1,p2,p3,p4,p5,p1p2,p2p3,p3p4,p4p5,p5p1,m1, &
                          m2,m3,m4,m5)
   implicit none
 #include "lt_collier.h"
@@ -714,54 +799,54 @@ ComplexType function E0i_cll(i,p1,p2,p3,p4,p5,p1p2,p2p3,p3p4,p4p5,p5p1,m1, &
   ComplexType, intent(in) :: p1,p2,p3,p4,p5,p1p2,p2p3,p3p4
   ComplexType, intent(in) :: p4p5,p5p1,m1,m2,m3,m4,m5
   ComplexType :: ee(Nee)
-  call Eput_cll(ee,p1,p2,p3,p4,p5,p1p2,p2p3,p3p4,p4p5,p5p1,m1,m2,m3,m4,m5)
-  E0i_cll = ee(i+epsi_cll)
-end function E0i_cll
+  call Eput(ee,p1,p2,p3,p4,p5,p1p2,p2p3,p3p4,p4p5,p5p1,m1,m2,m3,m4,m5)
+  E0i = ee(i+epsi)
+end function E0i
 
 ! ----------------------------------------------------------------------
 ! routines from LoopTools used for the interface with Collier
 ! ----------------------------------------------------------------------
 
-subroutine setlambda_cll(lam_)
+subroutine setlambda(lam_)
   implicit none
 #include "lt_ff.h"
   RealType, intent(in) :: lam_
-  RealType :: lambda_cll_
+  RealType :: lambda_
   if( lam_ .eq. 0d0 .or. lam_ .eq. -1d0 .or. lam_ .eq. -2d0 ) then
-     lambda_cll_ = dim(lam_,0D0)
-     epsi_cll = int(dim(0D0,lam_))
+     lambda_ = dim(lam_,0D0)
+     epsi = int(dim(0D0,lam_))
   elseif(lam_.gt.0d0) then
      print *, "mass regularization not yet implemented in the interface"
      stop
   else
-     print *, "illegal value for lambda_cll"
-     lambda_cll_ = 0
-     epsi_cll = 0
+     print *, "illegal value for lambda"
+     lambda_ = 0
+     epsi = 0
      stop
   endif
-  ! if( abs(lambda_cll - lambda_cll_) .gt. diffeps ) call clearcache_cll ! not useful
-  lambda_cll = lambda_cll_
-end subroutine setlambda_cll
+  ! if( abs(lambda - lambda_) .gt. diffeps ) call clearcache ! not useful
+  lambda = lambda_
+end subroutine setlambda
 
 ! ----------------------------------------------------------------------
 
-RealType function getlambda_cll()
+RealType function getlambda()
   implicit none
 #include "lt_ff.h"
-  getlambda_cll = lambda_cll
-end function getlambda_cll
+  getlambda = lambda
+end function getlambda
 
 ! ----------------------------------------------------------------------
 
-integer function getepsi_cll()
+integer function getepsi()
   implicit none
 #include "lt_ff.h"
-  getepsi_cll = epsi_cll
-end function getepsi_cll
+  getepsi = epsi
+end function getepsi
 
 ! ----------------------------------------------------------------------
 
-subroutine clearcache_cll
+subroutine clearcache
   use COLLIER
   implicit none
 #include "lt_ff.h"
@@ -770,23 +855,23 @@ subroutine clearcache_cll
   if(NcacheSave.ne.0 .and. NmaxSave.ne.0) then
     call InitCacheSystem_cll(NCacheSave,NmaxSave)
   endif
-end subroutine clearcache_cll
+end subroutine clearcache
 
 ! ----------------------------------------------------------------------
 
-subroutine markcache_cll
+subroutine markcache
   use COLLIER
   implicit none
-  call SwitchOffCacheSystem_cll
-end subroutine markcache_cll
+  call SwitchOffCacheSystem_cll ! check (this generates huge output)
+end subroutine markcache
 
 ! ----------------------------------------------------------------------
 
-subroutine restorecache_cll
+subroutine restorecache
   use COLLIER
   implicit none
-  call SwitchOnCacheSystem_cll
-end subroutine restorecache_cll
+  call SwitchOnCacheSystem_cll ! check (this generates huge output)
+end subroutine restorecache
 
 ! ----------------------------------------------------------------------
 
@@ -805,7 +890,7 @@ subroutine init_collier(Nmax,Rmax)
   NCacheSave = ncache
   NmaxSave = Nmax
   RmaxSave = Rmax
-  call Init_cll(Nmax,Rmax,"collier_out")
+  call Init_cll(Nmax,Rmax,"collier")
   call InitCacheSystem_cll(ncache,Nmax)
   ! 1: use COLI branch, 2: DD branch
   call SetMode_cll(1)
@@ -815,42 +900,52 @@ end subroutine init_collier
 
 ! ----------------------------------------------------------------------
 
-subroutine setuvdiv_cll(delta_uv)
+subroutine setuvdiv(delta_uv)
   use COLLIER
   implicit none
   double precision, intent(in) :: delta_uv
   call SetDeltaUV_cll(delta_uv)
-end subroutine setuvdiv_cll
+end subroutine setuvdiv
 
 ! ----------------------------------------------------------------------
 
-subroutine setdelta_cll(delta_uv)
+subroutine setdelta(delta_uv)
   use COLLIER
   implicit none
   double precision, intent(in) :: delta_uv
   call SetDeltaUV_cll(delta_uv)
-end subroutine setdelta_cll
+end subroutine setdelta
 
 ! ----------------------------------------------------------------------
 
-subroutine setmudim_cll(mu2)
+double precision function getdelta()
+  use COLLIER
+  implicit none
+  double precision DeltaUV
+  call GetdeltaUV_cll(DeltaUV)
+  getdelta = DeltaUV
+end function getdelta
+
+! ----------------------------------------------------------------------
+
+subroutine setmudim(mu2)
   use COLLIER
   implicit none
   double precision, intent(in) :: mu2
   call SetMuUV2_cll(mu2)
   call SetMuIR2_cll(mu2)
-end subroutine setmudim_cll
+end subroutine setmudim
 
 ! ----------------------------------------------------------------------
 
 ! initialisation of global parameters for loop functions
-subroutine setparam_collier(delta_uv,mu2,lambda_cll)
+subroutine setparam_collier(delta_uv,mu2,lambda)
   use COLLIER
   implicit none
-  double precision, intent(in) :: delta_uv,mu2,lambda_cll
+  double precision, intent(in) :: delta_uv,mu2,lambda
   call SetDeltaUV_cll(delta_uv)  ! set UV divergence control parameter
   call SetMuUV2_cll(mu2) ! renormalization scale squared
   call SetMuIR2_cll(mu2) ! renormalization scale squared
-  call setlambda_cll(lambda_cll) ! set IR divergence control parameter in DimReg
-  ! lambda_cll=0: finite part; lambda_cll=-1.d0: 1/eps part; lambda_cll=-2.d0: 1/eps^2 part
+  call setlambda(lambda) ! set IR divergence control parameter in DimReg
+  ! lambda=0: finite part; lambda=-1.d0: 1/eps part; lambda=-2.d0: 1/eps^2 part
 end subroutine setparam_collier

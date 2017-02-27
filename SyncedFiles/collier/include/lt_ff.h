@@ -1,11 +1,11 @@
       ! from ff.h:
       ! regularization parameters (modified)
-      RealType lambda_cll
-      common /ltregul/ lambda_cll
+      RealType lambda
+      common /ltregul/ lambda
 
       ! from lt.h: (modified)
-      integer epsi_cll
-      common /ltvars_cll/ epsi_cll
+      integer epsi
+      common /ltvars/ epsi
 
       ! variables for interfacing the cache system of collier
       ! global variables to store the numbers of 

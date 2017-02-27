@@ -229,15 +229,15 @@ modified for interface with Collier
 #define RealType double precision
 #endif
 
-      RealType getlambda_cll
-      integer getepsi_cll
+      RealType getlambda
+      integer getepsi
 
-      external getlambda_cll
-      external getepsi_cll
+      external getlambda
+      external getepsi
 
-      ComplexType A0i_cll, B0i_cll, C0i_cll, D0i_cll, E0i_cll
-      !ComplexType A0_cll
-      external A0i_cll, B0i_cll, C0i_cll, D0i_cll, E0i_cll
-      !external A0_cll
+      ComplexType A0i, B0i, C0i, D0i, E0i
+      ComplexType A0
+      external A0i, B0i, C0i, D0i, E0i
+      external A0
 
 #endif
