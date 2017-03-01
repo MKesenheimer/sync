@@ -8,7 +8,6 @@
                 gsy = gs*(1+AlfaS/(3*Pi)) == gs*(1+dZgs1y) (see: hep-ph/9308222)
                 For quark-squark-neutralino:
                 ely = el*(1-AlfaS/(6*Pi)) == el*(1+dZe1y).
-                The values of dZgs1y and dZe1y must be set manually
                 in the generated fortran code.
                 implementation of Apr 2015		
                 last modified 1 Mar 17 by mk
@@ -84,8 +83,14 @@ dAf1[_,_,_] := 0;
 
 RenConst[0] := 0;
 
+(* susy restoring CT *)
+RenConst[dZe1y] = - Alfas/(6*Pi)
+
+RenConst[dZgs1y] = Alfas/(3*Pi)
 
 (* on shell renormalization for incoming gluons *)
 RenConst[dZGG1] := FieldRC[V[5]]
 
-RenConst[dZgs1] := - 3*UVDivergentPart[dZGG1]/2 + dZgg3
+RenConst[dZGG1UV] := UVDivergentPart[FieldRC[V[5]]]
+
+RenConst[dZgs1] := - 3*dZGG1UV/2 + dZgg3
