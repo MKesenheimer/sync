@@ -28,11 +28,11 @@ If[$CommandLine[[2]] === "-script",
 	 p[4] = ToString[$CommandLine[[7]]];
 	 p[5] = ToString[$CommandLine[[8]]];),
 	(*Else*)
-	(p[1] = "dbar";
+	(p[1] = "qubar";
 	 p[2] = "g";
-	 p[3] = "n1";
-	 p[4] = "n2";
-	 p[5] = "dbar";)
+	 p[3] = "nI";
+	 p[4] = "nJ";
+	 p[5] = "qubar";)
 ]
 
 CalcProcess = p[1]<>p[2]<>"_"<>p[3]<>p[4]<>p[5];
@@ -88,31 +88,32 @@ Print[process]
 
 
 (*Neglect Masses (URL)*)
-Neglect[ME] = Neglect[ME2] = 0;
 Neglect[MU] = Neglect[MU2] = 0;
 Neglect[MC] = Neglect[MC2] = 0;
 Neglect[MD] = Neglect[MD2] = 0;
 Neglect[MS] = Neglect[MS2] = 0;
+Neglect[MUC] = Neglect[MU2C] = 0;
+Neglect[MCC] = Neglect[MC2C] = 0;
+Neglect[MDC] = Neglect[MD2C] = 0;
+Neglect[MSC] = Neglect[MS2C] = 0;
+Neglect[_Mf] = Neglect[_Mf2] = 0;
+Neglect[_MfC] = Neglect[_Mf2C] = 0;
 (*Neglect[MB] = Neglect[MB2] = 0;
 Neglect[MT] = Neglect[MT2] = 0;*)
-
-(*TODO: remove in the finale amplitudes*)
-(*Diagonale CKM Matrix*)
-CKM = IndexDelta;
-CKMC = IndexDelta;
-
-(*SUSY restoring CT*)
-dZe1y = 0;
-dZgs1y = 0;
 
 (*particle widths (complex mass scheme)*)
 Sq[MGl] = MGl2 - I MGl WGl;
 Sq[MSf[a__]] = MSf2[a] - I MSf[a] WSf[a];
-Sq[MZ] = MZ2 - I MZ WZ;
-Sq[WZ] = WZ2 - I WZ WW;
+(*Sq[MZ] = MZ2 - I MZ WZ;
+Sq[WZ] = WZ2 - I WZ WW;*)
+widths = {MZ2 -> MZ2 - I MZ WZ, MW2 -> WZ2 - I WZ WW};
 
 (*real widths*)
-Scan[ (RealQ[#] = True)&, {WGl, _WSf, WW, WZ}]
+Scan[ (RealQ[#] = True)&, {WGl, _WSf, WW, WZ}];
+
+(*Test*)
+Re[MSf[Sfe3,3,Gen3]^2]
+Conjugate[MSf[Sfe3,3,Gen3]^2]
 
 
 (*Options*)
@@ -140,32 +141,32 @@ DoPaint[diags_, type_, opt___] := Paint[diags, opt,
   DisplayFunction -> (Export[ToFileName[$PaintSE, name <> "_" <> type <> ".pdf"], #]&)]
 
 (*faster code generation without boxes and pentagons, could be used for debugging*)
-$FastCode = True;
+$FastCode = False;
 
 (*complexify the arguments of the loop functions (required for the use with collier)*)
 cmplx = {0->dcmplx[0], MZ->MZC, MW->MWC, MZ2->MZ2C, MW2->MW2C, MU->MUC, MC->MCC, MT->MTC, MD->MDC, MS->MSC, MB->MBC, MU2->MU2C, MC2->MC2C, MT2->MT2C, MD2->MD2C, MS2->MS2C, MB2->MB2C, 
-       Mf2[i_,j_]:>Mf2C[i,j], MNeu[i_]:>MNeuC[i], MNeu2[i_]:>MNeu2C[i], MCha[i_]:>MChaC[i], Cha2[i_]:>MCha2C[i], MSf[i_,j_,k_]:>MSfC[i,j,k], MSf2[i_,j_,k_]:>MSf2C[i,j,k],
+       Mf[i_,j_]:>MfC[i,j], Mf2[i_,j_]:>Mf2C[i,j], MNeu[i_]:>MNeuC[i], MNeu2[i_]:>MNeu2C[i], MCha[i_]:>MChaC[i], Cha2[i_]:>MCha2C[i], MSf[i_,j_,k_]:>MSfC[i,j,k], MSf2[i_,j_,k_]:>MSf2C[i,j,k],
        MGl->MGlC, MGl2->MGl2C, Mh0->Mh0C, MHH->MHHC, MA0->MA0C, MHp->MHpC, Mh02->Mh02C, MHH2->MHH2C, MA02->MA02C, MHp2->MHp2C};
 
 
-Print["Born"]
+Print["Born"];
 
 tops = CreateTopologies[0, 2 -> 3];
 ins = InsertFields[tops, process];
 (*exclude fermion higgs couplings. top pdfs = 0 \[Rule] no external tops \[Rule] no internal tops \[Rule] no fermion higgs coupling*)
-(*TODO: check for chargino pair production and chargino neutralino production*)
 ins = DiagramSelect[ins,(FreeQ[FieldPoints[##],FieldPoint[_][_. F[3|4,_], _. F[3|4,_], S[n_/;n<=6]]])& ];
 
 DoPaint[ins, "born"];
 
 born = CalcFeynAmp[CreateFeynAmp[ins]];
+born = born/.{Den[p2_,m2_]:>Den[p2,m2/.widths]};
 born = born//.{Alfa2->0};
 
 Print["born = "];
 Print[born];
 
 
-Print["Counter Terms"]
+Print["Counter Terms"];
 
 top = CreateCTTopologies[1, 2 -> 3, ExcludeTopologies -> {TadpoleCTs, WFCorrectionCTs}]; (*Exclude Tadpole- and Self-Energy CT on external legs*)
 ins = InsertFields[top, process];
@@ -189,7 +190,7 @@ ckinematics = {S->SC, T->TC, U->UC, T24->T24C, T14->T14C, T13->T13C, T23->T23C, 
 cmplx = Join[cmplx,ckinematics];
 
 
-Print["Self Energies"]
+Print["Self Energies"];
 
 top = CreateTopologies[1, 2 -> 3, SelfEnergiesOnly];
 ins = InsertFields[top, process];
@@ -211,6 +212,8 @@ ins = DiagramSelect[ins,(FreeQ[FieldPoints[##],FieldPoint[_][_. S[13|14,_],_. S[
 DoPaint[ins, "self"];
 
 self = CalcFeynAmp[CreateFeynAmp[ins], counterSelf];
+self = self/.{Den[p2_,m2_]:>Den[p2,m2/.widths]};
+self = self//.{Alfa2->0};
 
 (*complexify the loop arguments (required for collier)*)
 self = self/.{A0[m1_]:>A0[m1/.cmplx]};
@@ -220,13 +223,11 @@ self = self/.{C0i[cci_,p1_,p2_,p3_,m1_,m2_,m3_]:>C0i[cci,p1/.cmplx,p2/.cmplx,p3/
 self = self/.{D0i[ddi_,p1_,p2_,p3_,p4_,p5_,p6_,m1_,m2_,m3_,m4_]:>D0i[ddi,p1/.cmplx,p2/.cmplx,p3/.cmplx,p4/.cmplx,p5/.cmplx,p6/.cmplx,m1/.cmplx,m2/.cmplx,m3/.cmplx,m4/.cmplx]};
 self = self/.{E0i[eei_,p1_,p2_,p3_,p4_,p5_,p6_,p7_,p8_,p9_,p10_,m1_,m2_,m3_,m4_,m5_]:>E0i[eei,p1/.cmplx,p2/.cmplx,p3/.cmplx,p4/.cmplx,p5/.cmplx,p6/.cmplx,p7/.cmplx,p8/.cmplx,p9/.cmplx,p10/.cmplx,m1/.cmplx,m2/.cmplx,m3/.cmplx,m4/.cmplx,m5/.cmplx]};
 
-self = self//.{Alfa2->0};
-
 Print["self = "];
 Print[self];
 
 
-Print["Vertices"]
+Print["Vertices"];
 
 top = CreateTopologies[1, 2 -> 3, TrianglesOnly];
 ins = InsertFields[top, process];
@@ -274,6 +275,8 @@ ins = DiagramComplement[ins,insDel];
 DoPaint[ins, "vert"];
 
 vert = CalcFeynAmp[CreateFeynAmp[ins], counterVert];
+vert = vert/.{Den[p2_,m2_]:>Den[p2,m2/.widths]};
+vert = vert//.{Alfa2->0};
 
 (*complexify the loop arguments (required for collier)*)
 vert = vert/.{A0[m1_]:>A0[m1/.cmplx]};
@@ -282,8 +285,6 @@ vert = vert/.{B0i[bbi_,p1_,m1_,m2_]:>B0i[bbi,p1/.cmplx,m1/.cmplx,m2/.cmplx]};
 vert = vert/.{C0i[cci_,p1_,p2_,p3_,m1_,m2_,m3_]:>C0i[cci,p1/.cmplx,p2/.cmplx,p3/.cmplx,m1/.cmplx,m2/.cmplx,m3/.cmplx]};
 vert = vert/.{D0i[ddi_,p1_,p2_,p3_,p4_,p5_,p6_,m1_,m2_,m3_,m4_]:>D0i[ddi,p1/.cmplx,p2/.cmplx,p3/.cmplx,p4/.cmplx,p5/.cmplx,p6/.cmplx,m1/.cmplx,m2/.cmplx,m3/.cmplx,m4/.cmplx]};
 vert = vert/.{E0i[eei_,p1_,p2_,p3_,p4_,p5_,p6_,p7_,p8_,p9_,p10_,m1_,m2_,m3_,m4_,m5_]:>E0i[eei,p1/.cmplx,p2/.cmplx,p3/.cmplx,p4/.cmplx,p5/.cmplx,p6/.cmplx,p7/.cmplx,p8/.cmplx,p9/.cmplx,p10/.cmplx,m1/.cmplx,m2/.cmplx,m3/.cmplx,m4/.cmplx,m5/.cmplx]};
-
-vert = vert//.{Alfa2->0};
 
 Print["vert = "];
 Print[vert];
@@ -316,6 +317,8 @@ ins = DiagramComplement[ins,insDel];
 DoPaint[ins, "box"];
 
 box = CalcFeynAmp[CreateFeynAmp[ins]];
+box = box/.{Den[p2_,m2_]:>Den[p2,m2/.widths]};
+box = box//.{Alfa2->0};
 
 (*complexify the loop arguments (required for collier)*)
 box = box/.{A0[m1_]:>A0[m1/.cmplx]};
@@ -324,8 +327,6 @@ box = box/.{B0i[bbi_,p1_,m1_,m2_]:>B0i[bbi,p1/.cmplx,m1/.cmplx,m2/.cmplx]};
 box = box/.{C0i[cci_,p1_,p2_,p3_,m1_,m2_,m3_]:>C0i[cci,p1/.cmplx,p2/.cmplx,p3/.cmplx,m1/.cmplx,m2/.cmplx,m3/.cmplx]};
 box = box/.{D0i[ddi_,p1_,p2_,p3_,p4_,p5_,p6_,m1_,m2_,m3_,m4_]:>D0i[ddi,p1/.cmplx,p2/.cmplx,p3/.cmplx,p4/.cmplx,p5/.cmplx,p6/.cmplx,m1/.cmplx,m2/.cmplx,m3/.cmplx,m4/.cmplx]};
 box = box/.{E0i[eei_,p1_,p2_,p3_,p4_,p5_,p6_,p7_,p8_,p9_,p10_,m1_,m2_,m3_,m4_,m5_]:>E0i[eei,p1/.cmplx,p2/.cmplx,p3/.cmplx,p4/.cmplx,p5/.cmplx,p6/.cmplx,p7/.cmplx,p8/.cmplx,p9/.cmplx,p10/.cmplx,m1/.cmplx,m2/.cmplx,m3/.cmplx,m4/.cmplx,m5/.cmplx]};
-
-box = box//.{Alfa2->0};
 
 Print["box = "];
 Print[box];
@@ -342,6 +343,8 @@ ins = DiagramSelect[ins,(MemberQ[LoopFields[##], V[5,{_}]] || MemberQ[LoopFields
 DoPaint[ins, "pent"];
 
 pent = CalcFeynAmp[CreateFeynAmp[ins]];
+pent = pent/.{Den[p2_,m2_]:>Den[p2,m2/.widths]};
+pent = pent//.{Alfa2->0};
 
 (*complexify the loop arguments (required for collier)*)
 pent = pent/.{A0[m1_]:>A0[m1/.cmplx]};
@@ -350,8 +353,6 @@ pent = pent/.{B0i[bbi_,p1_,m1_,m2_]:>B0i[bbi,p1/.cmplx,m1/.cmplx,m2/.cmplx]};
 pent = pent/.{C0i[cci_,p1_,p2_,p3_,m1_,m2_,m3_]:>C0i[cci,p1/.cmplx,p2/.cmplx,p3/.cmplx,m1/.cmplx,m2/.cmplx,m3/.cmplx]};
 pent = pent/.{D0i[ddi_,p1_,p2_,p3_,p4_,p5_,p6_,m1_,m2_,m3_,m4_]:>D0i[ddi,p1/.cmplx,p2/.cmplx,p3/.cmplx,p4/.cmplx,p5/.cmplx,p6/.cmplx,m1/.cmplx,m2/.cmplx,m3/.cmplx,m4/.cmplx]};
 pent = pent/.{E0i[eei_,p1_,p2_,p3_,p4_,p5_,p6_,p7_,p8_,p9_,p10_,m1_,m2_,m3_,m4_,m5_]:>E0i[eei,p1/.cmplx,p2/.cmplx,p3/.cmplx,p4/.cmplx,p5/.cmplx,p6/.cmplx,p7/.cmplx,p8/.cmplx,p9/.cmplx,p10/.cmplx,m1/.cmplx,m2/.cmplx,m3/.cmplx,m4/.cmplx,m5/.cmplx]};
-
-pent = pent//.{Alfa2->0};
 
 Print["pent = "];
 Print[pent];
@@ -366,12 +367,6 @@ col = ColourME[All,born];
 
 abbr = OptimizeAbbr[Abbr[]];
 subexpr = OptimizeAbbr[Subexpr[]]//.{Alfa2->0};
-
-Print["abbr = "];
-Print[abbr];
-
-Print["subexpr = "];
-Print[subexpr];
 
 (*fortran can't handle arrays with dimensionality greater than 7*)
 (*apply back the subexpressions with number of arguments greater than 6*)
@@ -410,13 +405,9 @@ InsertFieldsHook[tops_,f1_->f2_]:=InsertFields[tops,f1->f2,ExcludeFieldPoints ->
 ren = CalcRenConst[amps];
 (*the renormalization constant for the 3-gluon vertex must be calculated externally*)
 dZgg3s = Import["dZgg3_MSSM.wdx"];
-Print["dZgg3s"];
-Print[dZgg3s];
-
 renlist = Join[{dZgg3->dZgg3s},Level[ren,1]];
 ren = RenConstList[RenConst][renlist//.{List->Sequence}];
 
-ren = ren/.{RenConst[0]->0};
 ren = ren//.{Alfa->0, Alfa2->0}; (*consider only strong corrections*)
 
 ren = ren/.{c_/MD:>c/(MD+MR),c_/MU:>c/(MU+MR),c_/MS:>c/(MS+MR),c_/MC:>c/(MC+MR),c_/MB:>c/(MB+MR)}; (*regularize 1/0 terms*)
