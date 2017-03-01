@@ -1,7 +1,7 @@
 (*
 	MSSMCTPOWHEG.mod
                 model file for MSSM based on MSSMCT.mod
-                by Julien Baglio.
+                by Julien Baglio and Matthias Kesenheimer.
                 Includes SUSY-restoring counterterms for
                 Yukawa couplings in MS_bar.
                 quark-squark-gluino:
@@ -11,7 +11,7 @@
                 The values of dZgs1y and dZe1y must be set manually
                 in the generated fortran code.
                 implementation of Apr 2015		
-                last modified 11 Nov 16 by jb
+                last modified 1 Mar 17 by mk
 *)
 
 LoadModel["MSSMCT_dZgg3"]
@@ -83,3 +83,9 @@ dZbarfR1[1|2|11|12, _, _] := 0;
 dAf1[_,_,_] := 0;
 
 RenConst[0] := 0;
+
+
+(* on shell renormalization for incoming gluons *)
+RenConst[dZGG1] := FieldRC[V[5]]
+
+RenConst[dZgs1] := - 3*UVDivergentPart[dZGG1]/2 + dZgg3

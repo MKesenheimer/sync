@@ -3,10 +3,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[         0,          0]
-NotebookDataLength[     66607,       1982]
-NotebookOptionsPosition[     62070,       1830]
-NotebookOutlinePosition[     62425,       1846]
-CellTagsIndexPosition[     62382,       1843]
+NotebookDataLength[     81132,       2408]
+NotebookOptionsPosition[     75690,       2229]
+NotebookOutlinePosition[     76045,       2245]
+CellTagsIndexPosition[     76002,       2242]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -1651,6 +1651,8 @@ Cell[CellGroupData[{
 Cell["FormCalc und FeynArts", "Subsection",
  CellChangeTimes->{{3.687500240449785*^9, 3.687500248408855*^9}}],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
  RowBox[{
   RowBox[{"(*", "Kopf", "*)"}], "\[IndentingNewLine]", 
@@ -1667,6 +1669,48 @@ Cell[BoxData[
    RowBox[{"<<", "\"\<!rm *.frm\>\""}]}]}]], "Input",
  CellChangeTimes->{{3.687500314671139*^9, 3.687500318788969*^9}, {
   3.6968236179123783`*^9, 3.696823624272132*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.697280730548143*^9}],
+
+Cell[BoxData["\<\"FeynArts 3.9 (23 Sep 2015)\"\>"], "Print",
+ CellChangeTimes->{3.697280730556491*^9}],
+
+Cell[BoxData["\<\"by Hagen Eck, Sepp Kueblbeck, and Thomas Hahn\"\>"], "Print",
+ CellChangeTimes->{3.697280730567563*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.697280730620255*^9}],
+
+Cell[BoxData["\<\"FeynArtsAdd 1.0 (16 Dec 2016)\"\>"], "Print",
+ CellChangeTimes->{3.697280730632676*^9}],
+
+Cell[BoxData["\<\"by Matthias Kesenheimer, with thanks to Thomas Hahn\"\>"], \
+"Print",
+ CellChangeTimes->{3.69728073064322*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.697280730653287*^9}],
+
+Cell[BoxData["\<\"FormCalc 9.4 (7 Jun 2016)\"\>"], "Print",
+ CellChangeTimes->{3.6972807306635103`*^9}],
+
+Cell[BoxData["\<\"by Thomas Hahn\"\>"], "Print",
+ CellChangeTimes->{3.697280730673571*^9}],
+
+Cell[BoxData["\<\"\"\>"], "Print",
+ CellChangeTimes->{3.697280730950912*^9}],
+
+Cell[BoxData["\<\"FormCalcAdd 1.2.3 (23 Jan 2016)\"\>"], "Print",
+ CellChangeTimes->{3.697280730962613*^9}],
+
+Cell[BoxData["\<\"by Matthias Kesenheimer, with thanks to Thomas Hahn\"\>"], \
+"Print",
+ CellChangeTimes->{3.697280730973016*^9}]
+}, Open  ]]
+}, Open  ]],
 
 Cell[BoxData[{
  RowBox[{
@@ -1825,7 +1869,362 @@ Cell[BoxData[
  RowBox[{"CreateFeynAmp", "[", 
   RowBox[{"ins1", "[", 
    RowBox[{"[", "1", "]"}], "]"}], "]"}]], "Input",
- CellChangeTimes->{{3.6883727670472603`*^9, 3.688372797652499*^9}}]
+ CellChangeTimes->{{3.6883727670472603`*^9, 3.688372797652499*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Extract", " ", "Topologies"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"top", " ", "=", " ", 
+    RowBox[{"CreateTopologies", "[", 
+     RowBox[{"0", ",", 
+      RowBox[{"2", "\[Rule]", "2"}]}], "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{"top1", " ", "=", " ", 
+    RowBox[{
+     RowBox[{"Level", "[", 
+      RowBox[{"top", ",", "1"}], "]"}], "[", 
+     RowBox[{"[", "3", "]"}], "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{"top", " ", "=", " ", 
+    RowBox[{"TopologyList", "[", "top1", "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{"Paint", "[", "top", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.6972806801974163`*^9, 3.6972808012977343`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"TopologyList", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"Topology", "[", "1", "]"}], "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "1", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "4", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "2", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "4", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "3", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "4", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "4", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "4", "]"}], "[", "5", "]"}]}], "]"}]}], "]"}], 
+   ",", 
+   RowBox[{
+    RowBox[{"Topology", "[", "1", "]"}], "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "1", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "2", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "3", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "4", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Internal", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}]}], "]"}], 
+   ",", 
+   RowBox[{
+    RowBox[{"Topology", "[", "1", "]"}], "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "1", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "2", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "3", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "4", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Internal", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}]}], "]"}], 
+   ",", 
+   RowBox[{
+    RowBox[{"Topology", "[", "1", "]"}], "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "1", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "2", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "3", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "1", "]"}], "[", "4", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+     RowBox[{
+      RowBox[{"Propagator", "[", "Internal", "]"}], "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}], ",", 
+       RowBox[{
+        RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}]}], 
+    "]"}]}], "]"}]], "Output",
+ CellChangeTimes->{{3.6972807551537046`*^9, 3.697280801855142*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Topology", "[", "1", "]"}], "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Vertex", "[", "1", "]"}], "[", "1", "]"}], ",", 
+     RowBox[{
+      RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+   RowBox[{
+    RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Vertex", "[", "1", "]"}], "[", "2", "]"}], ",", 
+     RowBox[{
+      RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}], ",", 
+   RowBox[{
+    RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Vertex", "[", "1", "]"}], "[", "3", "]"}], ",", 
+     RowBox[{
+      RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+   RowBox[{
+    RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Vertex", "[", "1", "]"}], "[", "4", "]"}], ",", 
+     RowBox[{
+      RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}], ",", 
+   RowBox[{
+    RowBox[{"Propagator", "[", "Internal", "]"}], "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}], ",", 
+     RowBox[{
+      RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}]}], 
+  "]"}]], "Output",
+ CellChangeTimes->{{3.6972807551537046`*^9, 3.697280801861936*^9}}],
+
+Cell[BoxData[
+ RowBox[{"TopologyList", "[", 
+  RowBox[{
+   RowBox[{"Topology", "[", "1", "]"}], "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Vertex", "[", "1", "]"}], "[", "1", "]"}], ",", 
+      RowBox[{
+       RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+    RowBox[{
+     RowBox[{"Propagator", "[", "Incoming", "]"}], "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Vertex", "[", "1", "]"}], "[", "2", "]"}], ",", 
+      RowBox[{
+       RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}], ",", 
+    RowBox[{
+     RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Vertex", "[", "1", "]"}], "[", "3", "]"}], ",", 
+      RowBox[{
+       RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}]}], "]"}], ",", 
+    RowBox[{
+     RowBox[{"Propagator", "[", "Outgoing", "]"}], "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Vertex", "[", "1", "]"}], "[", "4", "]"}], ",", 
+      RowBox[{
+       RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}], ",", 
+    RowBox[{
+     RowBox[{"Propagator", "[", "Internal", "]"}], "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Vertex", "[", "3", "]"}], "[", "5", "]"}], ",", 
+      RowBox[{
+       RowBox[{"Vertex", "[", "3", "]"}], "[", "6", "]"}]}], "]"}]}], "]"}], 
+  "]"}]], "Output",
+ CellChangeTimes->{{3.6972807551537046`*^9, 3.697280801866529*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"> Top. \"\>", "\[InvisibleSpace]", "1", 
+   "\[InvisibleSpace]", "\<\": \"\>", 
+   "\[InvisibleSpace]", "\<\"1 diagram\"\>"}],
+  SequenceForm["> Top. ", 1, ": ", "1 diagram"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.6972808018700314`*^9}],
+
+Cell[BoxData[
+ GraphicsBox[{InsetBox[
+    GraphicsBox[
+     {Thickness[0.005], 
+      LineBox[{{6.139089236967266*^-12, 15.}, {10.000000000002046`, 
+       14.000000000003638`}}], 
+      LineBox[{{-7.503331289626658*^-12, 5.000000000003638}, {
+       9.999999999988404, 6.}}], 
+      LineBox[{{20.000000000002956`, 15.}, {10.000000000002956`, 14.}}], 
+      LineBox[{{19.999999999997726`, 4.999999999996362}, {9.999999999997726, 
+       5.999999999996362}}], 
+      LineBox[{{10., 14.000000000000902`}, {10., 6.0000000000000036`}}], 
+      {PointSize[0.04], PointBox[{10., 13.99999999999999}], 
+       PointBox[{10., 6.}]}, InsetBox[
+       TagBox[
+        StyleBox[
+         TagBox["T1",
+          DisplayForm],
+         FontFamily->"Helvetica",
+         FontSize->7.997355371900827],
+        StyleForm[#, FontFamily -> "Helvetica", FontSize -> 
+         7.997355371900827]& ], {10., -0.5}, {0, -1}]},
+     AspectRatio->1,
+     PlotRange->{{-1, 21}, {-1, 21}}], {0, 44}, {0, 0}, {22, 22}], InsetBox[
+    TagBox[
+     StyleBox[
+      TagBox["2",
+       DisplayForm],
+      FontFamily->"Helvetica",
+      FontSize->11.996033057851239`],
+     StyleForm[#, FontFamily -> "Helvetica", FontSize -> 
+      11.996033057851239`]& ], {28.5, 69.96}, {0, 0}], InsetBox[
+    TagBox[
+     StyleBox[
+      TagBox["\[RightArrow]",
+       DisplayForm],
+      FontFamily->"Helvetica",
+      FontSize->11.996033057851239`],
+     StyleForm[#, FontFamily -> "Helvetica", FontSize -> 
+      11.996033057851239`]& ], {33., 69.96}, {0, 0}], InsetBox[
+    TagBox[
+     StyleBox[
+      TagBox["2",
+       DisplayForm],
+      FontFamily->"Helvetica",
+      FontSize->11.996033057851239`],
+     StyleForm[#, FontFamily -> "Helvetica", FontSize -> 
+      11.996033057851239`]& ], {37.5, 69.96}, {0, 0}]},
+  AspectRatio->1.0999999999999999`,
+  ImageSize->{288, 288},
+  PlotRange->{{0, 66}, {0, 72.6}}]], "Print",
+ CellChangeTimes->{3.697280801874159*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"FeynArtsGraphics", "[", 
+   RowBox[{"2", "\[Rule]", "2"}], "]"}], "[", 
+  TagBox[
+   RowBox[{"(", "\[NoBreak]", GridBox[{
+      {
+       InterpretationBox[
+        RowBox[{"\<\"[\"\>", "\[InvisibleSpace]", "\<\"T1\"\>", 
+         "\[InvisibleSpace]", "\<\"]\"\>"}],
+        SequenceForm["[", "T1", "]"],
+        Editable->False], "Null", "Null"},
+      {"Null", "Null", "Null"},
+      {"Null", "Null", "Null"}
+     },
+     GridBoxAlignment->{
+      "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}},
+        "RowsIndexed" -> {}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[0.7]}, 
+         Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+   Function[BoxForm`e$, 
+    MatrixForm[BoxForm`e$]]], "]"}]], "Output",
+ CellChangeTimes->{{3.6972807551537046`*^9, 3.697280801889367*^9}}]
+}, Open  ]]
 }, Open  ]]
 },
 WindowSize->{1203, 855},
@@ -1972,10 +2371,37 @@ Cell[54963, 1639, 248, 5, 28, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[55260, 1650, 109, 1, 44, "Subsection"],
-Cell[55372, 1653, 695, 15, 165, "Input"],
-Cell[56070, 1670, 4745, 123, 234, "Input"],
-Cell[60818, 1795, 1044, 26, 63, "Input"],
-Cell[61865, 1823, 189, 4, 28, "Input"]
+Cell[CellGroupData[{
+Cell[55394, 1655, 695, 15, 165, "Input"],
+Cell[CellGroupData[{
+Cell[56114, 1674, 76, 1, 21, "Print"],
+Cell[56193, 1677, 102, 1, 22, "Print"],
+Cell[56298, 1680, 121, 1, 22, "Print"],
+Cell[56422, 1683, 76, 1, 21, "Print"],
+Cell[56501, 1686, 105, 1, 22, "Print"],
+Cell[56609, 1689, 128, 2, 22, "Print"],
+Cell[56740, 1693, 76, 1, 21, "Print"],
+Cell[56819, 1696, 103, 1, 21, "Print"],
+Cell[56925, 1699, 90, 1, 22, "Print"],
+Cell[57018, 1702, 76, 1, 21, "Print"],
+Cell[57097, 1705, 107, 1, 21, "Print"],
+Cell[57207, 1708, 129, 2, 22, "Print"]
+}, Open  ]]
+}, Open  ]],
+Cell[57363, 1714, 4745, 123, 251, "Input"],
+Cell[62111, 1839, 1044, 26, 63, "Input"],
+Cell[63158, 1867, 189, 4, 28, "Input"],
+Cell[CellGroupData[{
+Cell[63372, 1875, 710, 17, 97, "Input"],
+Cell[64085, 1894, 5418, 152, 182, "Output"],
+Cell[69506, 2048, 1394, 40, 63, "Output"],
+Cell[70903, 2090, 1470, 41, 63, "Output"],
+Cell[CellGroupData[{
+Cell[72398, 2135, 298, 7, 22, "Print"],
+Cell[72699, 2144, 1925, 51, 296, "Print"]
+}, Open  ]],
+Cell[74639, 2198, 1023, 27, 63, "Output"]
+}, Open  ]]
 }, Open  ]]
 }
 ]
