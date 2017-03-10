@@ -120,12 +120,10 @@ Conjugate[MSf[Sfe3,3,Gen3]^2]
 SetOptions[InsertFields, Model -> "MSSMCTPOWHEG_dZgg3", InsertionLevel->{Classes},
            (*No Fermion-Higgs coupling*)
            Restrictions -> {NoLightFHCoupling},
-           (*Exclude Top, Higgs, Neutrinos, massive Leptons, Sneutrinos, Sleptons*)
-		   (*ExcludeParticles -> {S[1|2|3|4|5|6|11|12], F[1|2]},*)
-		   (*Exclude Neutrinos, massive Leptons, Sneutrinos, Sleptons*)
-		   ExcludeParticles -> {S[11|12], F[1|2]},
-		   (*no internal Weakinos*)
-		   LastSelections -> {!F[11],!F[12]}];
+           (*Exclude Neutrinos, massive Leptons, Sneutrinos, Sleptons*)
+           ExcludeParticles -> {S[11|12], F[1|2]},
+           (*no internal Weakinos*)
+           LastSelections -> {!F[11],!F[12]}];
 
 SetOptions[Paint, PaintLevel -> {Classes}, ColumnsXRows -> {4, 5}, AutoEdit -> False];
 
