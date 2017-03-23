@@ -657,7 +657,7 @@ WriteSpinCorrelatedMatrixElement[name_String,ampmunu_,abbr_List,nlegs_Integer,sp
   
   (*write Matrix element*)
   For[i=1,i<=Length[sumindices],i++,
-    Evaluate[ToExpression["FormCalc`AmpMuNuOut"<>ToString[i]]] = ampmunu0[[i]];
+    Evaluate[ToExpression["FormCalc`AmpMuNuOut"<>ToString[i]]] = ampmunu0[[i]]/.names/.functions;
     WriteStringn[strm, ""];
     For[j=1,j<=Length[sumindices[[i]]],j++,
       WriteStringn[strm, "do "<>ToString[GetVariables[sumindices[[i]]][[j]]]<>"=1,"<>ToString[GetValues[sumindices[[i]]][[j]]]];
