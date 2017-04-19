@@ -15,7 +15,7 @@ Hahn.
 BeginPackage["FormCalc`"]
 
 (*Global variables*)
-{Sfe6,Sfe6c,al,be,al0,be0,dcmplx}
+{dcmplx}
 
 SpinCorrelatedSum::usage =
 "SpinCorrelatedSum[expr] sums expr over the polarizations of external
@@ -137,7 +137,7 @@ choose to carry out the spinsum externally (NumericSum -> True) or to get an ana
 Begin["`Private`"]
 
 Print[];
-Print["FormCalcAdd 1.3.0 (23 Mar 2016)"];
+Print["FormCalcAdd 1.3.1 (24 Mar 2016)"];
 Print["by Matthias Kesenheimer, with thanks to Thomas Hahn"];
 
 
@@ -191,7 +191,7 @@ Block[ {Hel},
 SpinCorrelatedSum[expr_, opt___?OptionQ] :=
 Block[ {slegs, dim, gauge, nobrk, edit, retain, numsum,
 fullexpr, lor, indices, legs, masses, etasubst, vars, hh, abbr,
-subexpr, subexprc, rules},
+subexpr, subexprc, rules, out, names, i},
 
   If[ CurrentProc === {},
     Message[SpinCorrelatedSum::noprocess];
@@ -264,7 +264,29 @@ subexpr, subexprc, rules},
   nobrk = Alt[nobrk];	(* for DotSimplify *)
   FormPre[fullexpr];
 
-  Plus@@ FormOutput[][edit, retain][[1]]
+  out = Plus@@ FormOutput[][edit, retain][[1]];
+  
+  names = {ToExpression["al0"]->ToExpression["al[0]"],ToExpression["be0"]->ToExpression["be[0]"],ToExpression["deltaalbe"]->ToExpression["al[beind]"]};
+  Do[
+    names = Join[names,{ToExpression["k"<>ToString[i]<>"0"]->ToExpression["k"<>ToString[i]<>"[0]"]}];
+    names = Join[names,{ToExpression["k"<>ToString[i]<>"al"]->ToExpression["k"<>ToString[i]<>"[alind]"]}];
+    names = Join[names,{ToExpression["k"<>ToString[i]<>"be"]->ToExpression["k"<>ToString[i]<>"[beind]"]}];
+    names = Join[names,{ToExpression["eta"<>ToString[i]<>"al"]->ToExpression["eta"<>ToString[i]<>"[alind]"]}];
+    names = Join[names,{ToExpression["eta"<>ToString[i]<>"be"]->ToExpression["eta"<>ToString[i]<>"[beind]"]}];
+    names = Join[names,{ToExpression["es"<>ToString[i]<>"al"]->ToExpression["es"<>ToString[i]<>"[alind]"]}];
+    names = Join[names,{ToExpression["ect"<>ToString[i]<>"be"]->ToExpression["ect"<>ToString[i]<>"[beind]"]}];
+    names = Join[names,{ToExpression["et"<>ToString[i]<>"al"]->ToExpression["et"<>ToString[i]<>"[alind]"]}];
+    names = Join[names,{ToExpression["ecs"<>ToString[i]<>"be"]->ToExpression["ecs"<>ToString[i]<>"[beind]"]}];
+  ,{i,legs[[1]]}
+  ];
+
+  abbr = OptimizeAbbr[Abbr[]] //. names;
+  subexpr = OptimizeAbbr[Subexpr[]] //. names;
+  Abbr[] = abbr;
+  Subexpr[] = subexpr;
+  (*Print[OptimizeAbbr[Abbr[]]];
+  Print[OptimizeAbbr[Subexpr[]]];*)
+  out //. names
 ]
 
 
@@ -592,10 +614,10 @@ WriteSpinCorrelatedMatrixElement[name_String,bmunu_,abbr_List,nlegs_Integer,spin
 
   (*define external functions*)
   WriteStringn[strm, ""];
-  WriteStringn[strm, "double precision Epsilon, DotP, Den, Kronecker"];
+  WriteStringn[strm, "double precision Epsilonk, DotP, Den, Kronecker"];
   WriteStringn[strm, "double precision momsq, momsum2sq, momsum3sq"];
   WriteStringn[strm, "double complex cDotP"];
-  WriteStringn[strm, "external Epsilon, DotP, Den, Kronecker"];
+  WriteStringn[strm, "external Epsilonk, DotP, Den, Kronecker"];
   WriteStringn[strm, "external momsq, momsum2sq, momsum3sq"];
   WriteStringn[strm, "external cDotP"];
 
@@ -693,24 +715,11 @@ WriteSpinCorrelatedMatrixElement[name_String,bmunu_,abbr_List,nlegs_Integer,spin
 
   (*substitute wildcards and variable names for the abbreviations and the matrix element*)
   If[!numsum,
-    functions = {ToExpression["Pair"]->ToExpression["DotP"],ToExpression["IndexDelta"]->ToExpression["Kronecker"],ToExpression["Eps"]->ToExpression["Epsilon"]};
+    functions = {ToExpression["Pair"]->ToExpression["DotP"],ToExpression["IndexDelta"]->ToExpression["Kronecker"],ToExpression["Eps"]->ToExpression["epsilonk"]};
   ,(*else*)
-    functions = {ToExpression["Pair"]->ToExpression["cDotP"],ToExpression["IndexDelta"]->ToExpression["Kronecker"],ToExpression["Eps"]->ToExpression["Epsilon"]};
+    functions = {ToExpression["Pair"]->ToExpression["cDotP"],ToExpression["IndexDelta"]->ToExpression["Kronecker"],ToExpression["Eps"]->ToExpression["epsilonk"]};
   ];
-  (*TODO: Ersetzung von eta[al] schon fr\[UDoubleDot]her, z.B. in SpinCorrelatedSum, durchf\[UDoubleDot]hren.*)
-  names = {eta[i_]:>ToExpression["eta"<>ToString[i]], k[i_]:>ToExpression["k"<>ToString[i]],
-           al0->al[0],be0->be[0],ToExpression["deltaalbe"]->ToExpression["al[beind]"],I->ToExpression["ii"],-I->ToExpression["-ii"]};
-  For[i=1,i<=nlegs,i++,
-    names = Join[names,{ToExpression["k"<>ToString[i]<>"0"]->ToExpression["k"<>ToString[i]<>"[0]"]}];
-    names = Join[names,{ToExpression["k"<>ToString[i]<>"al"]->ToExpression["k"<>ToString[i]<>"[alind]"]}];
-    names = Join[names,{ToExpression["k"<>ToString[i]<>"be"]->ToExpression["k"<>ToString[i]<>"[beind]"]}];
-    names = Join[names,{ToExpression["eta"<>ToString[i]<>"al"]->ToExpression["eta"<>ToString[i]<>"[alind]"]}];
-    names = Join[names,{ToExpression["eta"<>ToString[i]<>"be"]->ToExpression["eta"<>ToString[i]<>"[beind]"]}];
-    names = Join[names,{ToExpression["es"<>ToString[i]<>"al"]->ToExpression["es"<>ToString[i]<>"[alind]"]}];
-    names = Join[names,{ToExpression["ect"<>ToString[i]<>"be"]->ToExpression["ect"<>ToString[i]<>"[beind]"]}];
-    names = Join[names,{ToExpression["et"<>ToString[i]<>"al"]->ToExpression["et"<>ToString[i]<>"[alind]"]}];
-    names = Join[names,{ToExpression["ecs"<>ToString[i]<>"be"]->ToExpression["ecs"<>ToString[i]<>"[beind]"]}];
-  ];
+  names = {eta[i_]:>ToExpression["eta"<>ToString[i]], k[i_]:>ToExpression["k"<>ToString[i]],I->ToExpression["ii"],-I->ToExpression["-ii"]};
 
   (*assign the values for the abbreviations*)
   AssignValues[ulist,GetValues[abbr]/.names/.functions];
