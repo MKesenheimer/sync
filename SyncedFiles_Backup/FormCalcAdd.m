@@ -100,17 +100,15 @@ GetElementsWithoutArgs::usage =
 Subsetn::usage = 
 "Subsetn[list_List,n_Integer] gives all subsets of n elements with overhang."
 
-WriteMatrixElement::usage = 
-"WriteMatrixElement[name_String,amp_,abbr_List,indices_List,functions_List,nlegs_Integer] 
-writes out the amplitude given in variable <amp> with abbreviations <abbr>. All open 
-indices must be defined in the list <indices>. The substitution list <functions> define which function names should be replaced.
+WriteSquaredMatrixElement::usage = 
+"WriteSquaredMatrixElement[name_String,amp_,abbr_List,nlegs_Integer,spinleg_Integer,opt___?OptionQ] 
+writes out the amplitude given in variable <amp> with abbreviations <abbr>.
 <nlegs> is the number of legs of the diagrams."
 
 WriteSpinCorrelatedMatrixElement::usage = 
-"WriteSpinCorrelatedMatrixElement[name_String,bmunu_,abbr_List,indices_List,functions_List,nlegs_Integer,spinleg_Integer] 
-writes out the spin correlated amplitude given in variable <bmunu> with abbreviations <abbr>. All open 
-indices must be defined in the list <indices>. The substitution list <functions> define which function names should be replaced.
-<nlegs> is the number of legs of the diagrams, <spinleg> is the number of the leg, that was used to calculate the spin correlation."
+"WriteSpinCorrelatedMatrixElement[name_String,bmunu_,abbr_List,nlegs_Integer,spinleg_Integer,opt___?OptionQ] 
+writes out the spin correlated amplitude given in variable <bmunu> with abbreviations <abbr>.
+<nlegs> is the number of legs of the diagrams, <spinleg> is the leg, for which the spin correlation is calculated."
 
 Cmplx::usage = 
 "Wraps every real variable with a function dcmplx[] which allows fortran to interpret the real variable as a complex one.
@@ -137,7 +135,7 @@ choose to carry out the spinsum externally (NumericSum -> True) or to get an ana
 Begin["`Private`"]
 
 Print[];
-Print["FormCalcAdd 1.3.1 (24 Mar 2016)"];
+Print["FormCalcAdd 1.3.2 (19 Apr 2017)"];
 Print["by Matthias Kesenheimer, with thanks to Thomas Hahn"];
 
 
@@ -532,6 +530,201 @@ GetSumand[sum_,indices_]:=Coefficient[sum,MapThread[SumOver[#1,#2]&,{GetVariable
 GetSumand[sum_,indices_]:=Coefficient[sum,MapThread[FeynArts`SumOver[#1,#2]&,{GetVariables[indices],GetValues[indices]}]/.List->Times]
 
 
+Options[WriteSquaredMatrixElement] = {
+  NumericSum -> False }
+
+WriteSquaredMatrixElement[name_String,born_,abbr_List,nlegs_Integer,spinleg___Integer,opt___?OptionQ]:=Block[
+  {numsum,strm,i,j,vars,ulist,indices,indlist,indlist50,indliststr,varlist,varlist50,varliststr,names,born0,functions,sumindices,indexcomb},
+
+  {numsum} =
+    ParseOpt[WriteSquaredMatrixElement, opt];
+
+  (*generate fortran code*)
+  strm = OpenFortran[name<>".mf"];
+  WriteStringn[strm, "subroutine "<>name<>"(p,born)"];
+  WriteStringn[strm, "implicit none"];
+  WriteStringn[strm, "#include \"PhysPars.h\""];
+  WriteStringn[strm, "double precision pi"];
+  WriteStringn[strm, "parameter (pi = 4.D0*datan(1.D0))"];
+  WriteStringn[strm, "double precision p(0:3,"<>ToString[nlegs]<>")"];
+  If[numsum,
+    WriteStringn[strm, "integer hel"];
+    WriteStringn[strm, "double complex e"<>ToString[spinleg]<>"(0:3), ec"<>ToString[spinleg]<>"(0:3)"];
+  ];
+  WriteStringn[strm, "integer i, j"];
+  WriteStringn[strm, "double precision born"];
+  For[i=1,i<=nlegs,i++,
+    If[!numsum,
+      WriteStringn[strm, "double precision k"<>ToString[i]<>"(0:3)"];
+    ,(*else*)
+      WriteStringn[strm, "double complex k"<>ToString[i]<>"(0:3)"];
+    ];
+  ];
+  (*TODO: generalize*)
+  If[nlegs==4,
+    WriteStringn[strm, "double precision S, T, U"];
+  ];
+  If[nlegs==5,
+    WriteStringn[strm, "double precision S, T, U, S34, T14, T24"];
+  ];
+
+  (*determine the indices that can occur in our matrix element*)
+  born0 = SplitSums[born];
+  sumindices = Map[GetSumIndices[#]&,born0];
+  born0 = Map[GetSumand[#,GetSumIndices[#]]&,born0];
+  indices = Apply[Union,sumindices];
+  (*bypass errors if indices list is empty*)
+  If[Length[indices]==0,
+    indices = {Placeholder->0};
+  ];
+  indexcomb = Subsets[indices];
+
+  (*write out indices*)
+  indlist = GetVariables[indices];
+  indlist50 = SplitList[indlist,50];
+  indliststr = Map[ListToString[#]&,indlist50];
+  If[Length[indlist]!=0,
+    For[i=1,i<=Length[indliststr],i++,
+      WriteStringn[strm, "integer "<>indliststr[[i]]];
+    ];
+  ];
+
+  (*write out abbreviations and subexpressions*)
+  varlist = GetVariables[abbr]/.indices;
+  varlist50 = SplitList[Map[FortranForm[#]&,varlist],50];
+  varliststr = Map[ListToString[#]&,varlist50];
+  If[Length[varlist]!=0,
+    For[i=1,i<=Length[varliststr],i++,
+      If[!numsum,
+        WriteStringn[strm, "double precision "<>varliststr[[i]]];
+      ,(*else*)
+        WriteStringn[strm, "double complex "<>varliststr[[i]]];
+      ];
+    ];
+  ];
+
+  (*define external functions*)
+  WriteStringn[strm, ""];
+  WriteStringn[strm, "double precision Epsilonk, DotP, Den, Kronecker"];
+  WriteStringn[strm, "double precision momsq, momsum2sq, momsum3sq"];
+  WriteStringn[strm, "double complex cDotP"];
+  WriteStringn[strm, "external Epsilonk, DotP, Den, Kronecker"];
+  WriteStringn[strm, "external momsq, momsum2sq, momsum3sq"];
+  WriteStringn[strm, "external cDotP"];
+
+  (*reset the amplitude*)
+  WriteStringn[strm, ""];
+  WriteStringn[strm, "born = 0D0"];
+
+  (*Momenta and Mandelstams*)
+  WriteStringn[strm, "S   = momsum2sq(p(:,1), p(:,2))"];
+  WriteStringn[strm, "T   = momsum2sq(p(:,1),-p(:,3))"];
+  WriteStringn[strm, "U   = momsum2sq(p(:,2),-p(:,3))"];
+  If[nlegs==5,
+    WriteStringn[strm, "S34 = momsum2sq(p(:,3), p(:,4))"];
+    WriteStringn[strm, "T14 = momsum2sq(p(:,1),-p(:,4))"];
+    WriteStringn[strm, "T24 = momsum2sq(p(:,2),-p(:,4))"];
+  ];
+
+  WriteStringn[strm, ""];
+  If[!numsum,
+    WriteStringn[strm, "do i=0,3"];
+    WriteStringn[strm, "if(i.eq.0) then"];
+    For[i=1,i<=nlegs,i++,
+      WriteStringn[strm, "k"<>ToString[i]<>"(i) = p(i,"<>ToString[i]<>")"];
+    ];
+    WriteStringn[strm, "else"];
+    For[i=1,i<=nlegs,i++,
+      WriteStringn[strm, "k"<>ToString[i]<>"(i) = -p(i,"<>ToString[i]<>")"];
+    ];
+    WriteStringn[strm, "endif"];
+    WriteStringn[strm, "enddo"];
+  ,(*else*)
+    WriteStringn[strm, "do i=0,3"];
+    For[i=1,i<=nlegs,i++,
+      WriteStringn[strm, "k"<>ToString[i]<>"(i) = dcmplx(p(i,"<>ToString[i]<>"))"];
+    ];
+    WriteStringn[strm, "enddo"];
+  ];
+
+  (*if NumericSum -> True was requested, sum over the gluon helicities*)
+  If[numsum,
+    WriteStringn[strm, "do hel=-1,1,2"];
+    WriteStringn[strm, ""];
+    WriteStringn[strm, "call polvector(dreal(k"<>ToString[spinleg]<>"), hel, e"<>ToString[spinleg]<>")"];
+    WriteStringn[strm, "ec"<>ToString[spinleg]<>"(:) = dconjg(e"<>ToString[spinleg]<>"(:))"];
+  ];
+
+  (*complicated but necessary construction to clear the generated variable names FormCalc`AmpOut* etc.*)
+  For[i=1,i<=Length[sumindices],i++,
+    Clear[Evaluate[ReleaseHold[Trace[ToExpression["FormCalc`AmpOut"<>ToString[i]]][[1,3]]]]];
+  ];
+  For[i=1,i<=Length[indexcomb],i++,
+    Clear[Evaluate[ReleaseHold[Trace[ToExpression["FormCalc`VarsOut"<>ToString[i]]][[1,3]]]]];
+    Clear[Evaluate[ReleaseHold[Trace[ToExpression["FormCalc`UlistOut"<>ToString[i]]][[1,3]]]]];
+  ];
+
+  (*calculate abbreviations*)
+  vars=GetVariables[abbr];
+  (*build a unique list of all local variables*)
+  ulist=Map[UniqueName,vars];
+  For[i=1,i<=Length[indexcomb],i++,
+    If[Length[indexcomb[[i]]]==0,
+      Evaluate[ToExpression["FormCalc`VarsOut"<>ToString[i]]] = GetElementsWithoutArgs[vars,Apply[Sequence,GetVariables[Last[indexcomb]]]];
+      Evaluate[ToExpression["FormCalc`UlistOut"<>ToString[i]]] = GetElementsWithoutArgs[ulist,Apply[Sequence,GetVariables[Last[indexcomb]]]];,
+    (*else*)
+      Evaluate[ToExpression["FormCalc`VarsOut"<>ToString[i]]] = GetElementsWithArgs[vars,Apply[Sequence,GetVariables[indexcomb[[i]]]]];
+      Evaluate[ToExpression["FormCalc`UlistOut"<>ToString[i]]] = GetElementsWithArgs[ulist,Apply[Sequence,GetVariables[indexcomb[[i]]]]];
+    ];
+    If[Length[Evaluate[ToExpression["FormCalc`VarsOut"<>ToString[i]]]]!=0,
+      WriteStringn[strm, ""];
+      For[j=1,j<=Length[indexcomb[[i]]],j++,
+        WriteStringn[strm, "do "<>ToString[GetVariables[indexcomb[[i]]][[j]]]<>"=1,"<>ToString[GetValues[indexcomb[[i]]][[j]]]];
+      ];
+      MapThread[WriteStringn[strm, "      <* "<>ToString[#1]<>" *> = <* "<>ToString[#2]<>" *>" ]&,{Evaluate[ToExpression["FormCalc`VarsOut"<>ToString[i]]],Evaluate[ToExpression["FormCalc`UlistOut"<>ToString[i]]]}];
+      For[j=1,j<=Length[indexcomb[[i]]],j++,
+        WriteStringn[strm, "enddo"];
+      ];
+    ];
+  ];
+  (*substitute wildcards and variable names for the abbreviations and the matrix element*)
+  If[!numsum,
+    functions = {ToExpression["Pair"]->ToExpression["DotP"],ToExpression["IndexDelta"]->ToExpression["Kronecker"],ToExpression["Eps"]->ToExpression["epsilonk"]};
+  ,(*else*)
+    functions = {ToExpression["Pair"]->ToExpression["cDotP"],ToExpression["IndexDelta"]->ToExpression["Kronecker"],ToExpression["Eps"]->ToExpression["epsilonk"]};
+  ];
+  names = {e[i_]:>ToExpression["e"<>ToString[i]], ec[i_]:>ToExpression["ec"<>ToString[i]], k[i_]:>ToExpression["k"<>ToString[i]],I->ToExpression["ii"],-I->ToExpression["-ii"]};
+
+  (*assign the values for the abbreviations*)
+  AssignValues[ulist,GetValues[abbr]/.names/.functions];
+  (*write Matrix element*)
+  For[i=1,i<=Length[sumindices],i++,
+    Evaluate[ToExpression["FormCalc`AmpOut"<>ToString[i]]] = born0[[i]]/.names/.functions;
+    WriteStringn[strm, ""];
+    For[j=1,j<=Length[sumindices[[i]]],j++,
+      WriteStringn[strm, "do "<>ToString[GetVariables[sumindices[[i]]][[j]]]<>"=1,"<>ToString[GetValues[sumindices[[i]]][[j]]]];
+    ];
+    If[!numsum,
+      WriteStringn[strm, "born = born + (<* FormCalc`AmpOut"<>ToString[i]<>" *>)"];
+    ,(*else*)
+      WriteStringn[strm, "born = born + dreal(<* FormCalc`AmpOut"<>ToString[i]<>" *>)"];
+    ];
+    For[j=1,j<=Length[sumindices[[i]]],j++,
+      WriteStringn[strm, "enddo"];
+    ];
+  ];
+  (*end loop gluon helicities*)
+  If[numsum,
+    WriteStringn[strm, "enddo"];
+  ];
+  WriteStringn[strm, ""];
+  WriteStringn[strm, "end"];
+  Close[strm];
+
+  Splice[name<>".mf", PageWidth -> 72];
+]
+
+
 Options[WriteSpinCorrelatedMatrixElement] = {
   NumericSum -> False }
 
@@ -686,6 +879,15 @@ WriteSpinCorrelatedMatrixElement[name_String,bmunu_,abbr_List,nlegs_Integer,spin
     WriteStringn[strm, "else"];
     WriteStringn[strm, "be(beind) = -1D0"];
     WriteStringn[strm, "endif"];
+  ];
+
+  (*complicated but necessary construction to clear the generated variable names FormCalc`AmpOut* etc.*)
+  For[i=1,i<=Length[sumindices],i++,
+    Clear[Evaluate[ReleaseHold[Trace[ToExpression["FormCalc`AmpOut"<>ToString[i]]][[1,3]]]]];
+  ];
+  For[i=1,i<=Length[indexcomb],i++,
+    Clear[Evaluate[ReleaseHold[Trace[ToExpression["FormCalc`VarsOut"<>ToString[i]]][[1,3]]]]];
+    Clear[Evaluate[ReleaseHold[Trace[ToExpression["FormCalc`UlistOut"<>ToString[i]]][[1,3]]]]];
   ];
 
   (*calculate abbreviations*)
